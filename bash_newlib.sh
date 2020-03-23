@@ -103,27 +103,33 @@ sleep 1
 function cscope_update
 {
     f=$1
+    csf=$(echo $f | tr \/ _)
     repo=$(pwd)
+    ignore_dirs=$2
 
-    echo "Working on $f"
-    mkdir -p .cs_$f
-    rm -rf .cs_$f/*
+    echo "Ignoring $ignore_dirs"
+    echo "Working on $f. Putting results in $csf"
+    mkdir -p .cs_$csf
+    rm -rf .cs_$csf/*
     
     echo "Finding files in $f"
-    ag --cc -l --ignore-dir=$ignore_dirs "" $repo/$f >> .cs_$f/cscope.files 
+    cmd="ag --cc -l $ignore_dirs \"\" $repo/$f >> .cs_$csf/cscope.files "
+    #echo $cmd
+    eval $cmd
     
-    echo "Cscope db in $f"
-    cd .cs_$f
+    echo "Cscope db in $f (folder=$csf)"
+    cd .cs_$csf
     cscope -b -q
 
-    echo "Done in $f"
+    echo "Done in $f (folder=$csf)"
+    cd -
 }
 
 # Run command in loop with a small sleep in between
 # Args: what to run, concatenetes everything
 function loop
 {
-    cmd=$1
+    cmd="$@"
     echo "Looping command $cmd"
     while true; do
         $cmd
