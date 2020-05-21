@@ -114,12 +114,12 @@ function cscope_update
     
     echo "Finding files in $f"
     cmd="ag --cc -l $ignore_dirs \"\" $repo/$f >> .cs_$csf/cscope.files "
-    #echo $cmd
+    echo $cmd
     eval $cmd
     
     echo "Cscope db in $f (folder=$csf)"
     cd .cs_$csf
-    cscope -b -q
+    cscope -b -q -k
 
     echo "Done in $f (folder=$csf)"
     cd -
@@ -132,7 +132,7 @@ function loop
     cmd="$@"
     echo "Looping command $cmd"
     while true; do
-        $cmd
+        eval $cmd
         sleep 1
     done
 }
